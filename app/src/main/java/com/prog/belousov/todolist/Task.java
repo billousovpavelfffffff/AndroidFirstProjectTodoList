@@ -26,7 +26,12 @@ public class Task implements Serializable {
         return ""+taskText;
     }
 
-
-
-
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof  Task){
+            if (((Task) obj).taskText.equals(taskText)) {
+                return true;
+            } else return false;
+        } else return false;
+    }
 }
