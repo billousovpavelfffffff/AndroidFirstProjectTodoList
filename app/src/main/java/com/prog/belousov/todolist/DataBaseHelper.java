@@ -77,9 +77,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         database.close();
     }
     //Метод, удаляющий из БД определенное задание.
-    public boolean deleteTask(Task task){
-
-        return true;
+    public void deleteTask(Task task){
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.delete(TABLE_NAME, COLUMN_USERTEXT + " = ?", new String[] {task.getTaskText()});
     }
     //Метод, меняющий в базе данных oldTask на newTask.
      public void updateTask(Task oldTask, Task newTask){

@@ -7,13 +7,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Switch;
 
 
 import java.util.ArrayList;
@@ -40,6 +43,8 @@ public class TasksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tasks);
         //Сцепляем ListView из разметки к ListView в коде.
         listView = findViewById(R.id.listView);
+        //Регистрируем ListView, говоря что он поддерживает контекстное меню.
+        registerForContextMenu(listView);
         //Создаём экземпляр помошника, через которого работаем с базой данных.
         dataBaseHelper = new DataBaseHelper(this);
         //Иницилизация массива.
@@ -99,6 +104,37 @@ public class TasksActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //Создание контекстного меню (Список, появляющийся при долгом нажатии на элемент списка ListView).
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        //Этот класс преобразует XML файл в меню.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_context, menu);
+    }
+
+    //Описывает поведение при выборе определенного варианта в появляющемся списке контекстного меню.
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        //Содержит информацию о элементе, на котором было вызвано контекстное меню.
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()){
+            case R.id.deleteItem:
+                //info.position - позиция жлемента, на котором было выхвано контекстное меню.
+                dataBaseHelper.deleteTask(taskList.get(info.position));
+                //Удаляем из массива это задание.
+                taskList.remove(info.position);
+                //Оповещаем адаптер про изменение в массиве.
+                listAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+
+
+
     }
 
     //Метод, который вызывается, после окончания выполнения CreateNewTaskActivity.
