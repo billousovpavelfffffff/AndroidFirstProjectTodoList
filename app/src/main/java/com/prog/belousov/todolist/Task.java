@@ -2,14 +2,24 @@ package com.prog.belousov.todolist;
 
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
 
 public class Task implements Serializable {
 
     private String taskText;
+    private boolean isDone;
 
-    public Task(String taskText) {
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
+    }
+
+    public Task(String taskText, boolean isDone) {
         this.taskText = taskText;
+        this.isDone = isDone;
     }
 
     public String getTaskText() {
@@ -27,11 +37,27 @@ public class Task implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((taskText == null) ? 0 : taskText.hashCode());
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        if(obj instanceof  Task){
-            if (((Task) obj).taskText.equals(taskText)) {
-                return true;
-            } else return false;
-        } else return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Task other = (Task) obj;
+        if (taskText == null) {
+            if (other.taskText != null)
+                return false;
+        } else if (!taskText.equals(other.taskText))
+            return false;
+        return true;
     }
 }

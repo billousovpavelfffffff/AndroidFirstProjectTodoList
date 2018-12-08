@@ -34,7 +34,7 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         //Проверка на пустой ввод.
         if (!userText.equals("")) {
             //Создаем новое задание с текстом пользователя.
-            Task task = new Task(userText);
+            Task task = new Task(userText, false);
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём в интент наш объект Task.

@@ -30,7 +30,7 @@ public class TasksActivity extends AppCompatActivity {
     //Сам список заданий.
     ListView listView;
     //Адаптер для ListVie, который принимает айди разметки, на этой разметке айди TextView, и массив заданий.
-    ArrayAdapter<Task> listAdapter;
+    TaskAdapter taskAdapter;
     //Наш массив заданий пользователя.
     ArrayList<Task> taskList;
     //Помошник для работы с БД.
@@ -50,7 +50,6 @@ public class TasksActivity extends AppCompatActivity {
         //Иницилизация массива.
         taskList = new ArrayList<>();
         initList();
-
     }
 
     //Метод иницилизации ListView.
@@ -58,21 +57,32 @@ public class TasksActivity extends AppCompatActivity {
         //Инициализируем наш массив, заполняя его из базы данных через интерфейс.
         taskList = dataBaseHelper.getAllTasks();
         //Инициализируем адаптер, в качестве параметров: Контекст, файл разметки с TextView, и айди конкретного TextView, куда он будет вставлять текст.
-        listAdapter = new ArrayAdapter<>(this,
-                R.layout.item_task, R.id.taskTextView, taskList);
+        taskAdapter = new TaskAdapter(this, R.layout.item_task, taskList);
         //Создаём слушателя нажатий на определнный элемент из списка.
         AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(TasksActivity.this, UpdateTaskActivity.class);
-                intent.putExtra("usertask", taskList.get(position));
-                startActivityForResult(intent, REQUEST_CODE_UPDATE);
+              //Получаем задание, на который нажали.
+              Task task = taskList.get(position);
+              if(!task.isDone()) {
+                  //Если он не отмечен сделанным, отмечаем его.
+                  task.setDone(true);
+                  taskAdapter.notifyDataSetChanged();
+                  //Записывем изменение в БД.
+                  dataBaseHelper.updateTaskToDone(task);
+              } else {
+                  //Если же отмечен сделанным, то убераем отметку.
+                  task.setDone(false);
+                  taskAdapter.notifyDataSetChanged();
+                  //Записывам изменение в БД.
+                  dataBaseHelper.updateTaskToUndone(task);
+              }
             }
         };
         //Ставим слушателя на ListView.
         listView.setOnItemClickListener(itemClickListener);
         //Связываем адаптер с ListView.
-        listView.setAdapter(listAdapter);
+        listView.setAdapter(taskAdapter);
     }
 
     //Метод для установки кнопок меню (Те что сверху)
@@ -99,7 +109,7 @@ public class TasksActivity extends AppCompatActivity {
                 //Через интерфейс удаляем все записи из базы данных.
                 dataBaseHelper.deleteAllTasks();
                 //Удаляем всё записи из адаптера.
-                listAdapter.clear();
+                taskAdapter.clear();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -120,19 +130,22 @@ public class TasksActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         //Содержит информацию о элементе, на котором было вызвано контекстное меню.
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.deleteItem:
                 //info.position - позиция жлемента, на котором было выхвано контекстное меню.
                 dataBaseHelper.deleteTask(taskList.get(info.position));
                 //Удаляем из массива это задание.
                 taskList.remove(info.position);
                 //Оповещаем адаптер про изменение в массиве.
-                listAdapter.notifyDataSetChanged();
+                taskAdapter.notifyDataSetChanged();
                 return true;
+            case R.id.editItem:
+                Intent intent = new Intent(TasksActivity.this, UpdateTaskActivity.class);
+                intent.putExtra("usertask", taskList.get(info.position));
+                startActivityForResult(intent, REQUEST_CODE_UPDATE);
             default:
                 return super.onContextItemSelected(item);
         }
-
 
 
     }
@@ -151,7 +164,7 @@ public class TasksActivity extends AppCompatActivity {
                 //Добавляем новое задание в массив.
                 taskList.add(task);
                 //Оповещаем адаптер, что в массив данных поменялся.
-                listAdapter.notifyDataSetChanged();
+                taskAdapter.notifyDataSetChanged();
 
             }
             //Результат от UpdateTaskActivity.
@@ -169,7 +182,7 @@ public class TasksActivity extends AppCompatActivity {
                 //Добавляем новое задание на тот индекс.
                 taskList.add(index, newTask);
                 //Оповещаем адаптер, что в массив данных поменялся.
-                listAdapter.notifyDataSetChanged();
+                taskAdapter.notifyDataSetChanged();
             }
         }
     }

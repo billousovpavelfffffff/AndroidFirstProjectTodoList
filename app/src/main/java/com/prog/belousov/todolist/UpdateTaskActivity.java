@@ -33,7 +33,7 @@ public class UpdateTaskActivity extends AppCompatActivity {
         //Проверка на пустой ввод.
         if (!userText.equals("")) {
             //Создаем обновлённое задание с текстом пользователя.
-            Task newTask = new Task(userText);
+            Task newTask = new Task(userText, oldTask.isDone());
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём старый обьект Task.

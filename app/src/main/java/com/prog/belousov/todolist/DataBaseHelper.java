@@ -16,6 +16,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private final static String TABLE_NAME = "TASKS";
     // Имя базы данных
     private static final String COLUMN_USERTEXT = "USERTEXT";
+    private static final String COLUMN_ISDONE = "ISDONE";
     private static final String DB_NAME = "tasksdb";
     // Версия базы данных
     private static final int DB_VERSION = 1;
@@ -30,9 +31,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE TASKS ("
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "USERTEXT TEXT);");
+                + "USERTEXT TEXT, "
+                + "ISDONE INTEGER);");
     }
-
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -44,6 +45,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_USERTEXT, task.getTaskText());
+        contentValues.put(COLUMN_ISDONE, task.isDone()? 1: 0);
         //Добавляем новые задания в базу данных.
         database.insert(TABLE_NAME, null, contentValues);
         database.close();
@@ -55,13 +57,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         //Получаем ссылку на базу данных.
         SQLiteDatabase database = this.getWritableDatabase();
         //Курсор, для доступа к запросу из базы данных. Можно назвать итератором.
-        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_USERTEXT},
+        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_USERTEXT, COLUMN_ISDONE},
                 null, null, null, null, null);
         if (cursor.moveToFirst()) {
             //Пока есть строки, он оттуда берет инфу.
             do {
                 String userText = cursor.getString(0);
-                taskList.add(new Task(userText));
+                boolean done = cursor.getInt(1) == 1;
+                taskList.add(new Task(userText, done));
             } while (cursor.moveToNext());
         }
         //Освобождаем ресурсы.
@@ -86,8 +89,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_USERTEXT, newTask.getTaskText());
+       // contentValues.put(COLUMN_ISDONE, oldTask.isDone()? 1: 0);
         database.update(TABLE_NAME, contentValues, COLUMN_USERTEXT + " = ?", new String[] {oldTask.getTaskText()});
      }
-
-
+     //Отмечает задание как сделанное в БД.
+    public void updateTaskToDone(Task task){
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_ISDONE, 1);
+        database.update(TABLE_NAME, contentValues, COLUMN_USERTEXT + " = ?", new String[] {task.getTaskText()});
+    }
+    //Уберает отметку задания как отмеченное с БД.
+    public void updateTaskToUndone(Task task){
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_ISDONE, 0);
+        database.update(TABLE_NAME, contentValues, COLUMN_USERTEXT + " = ?", new String[] {task.getTaskText()});
+    }
 }
