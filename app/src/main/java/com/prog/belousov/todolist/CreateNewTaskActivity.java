@@ -17,6 +17,7 @@ import android.widget.Toast;
 public class CreateNewTaskActivity extends AppCompatActivity {
 
     EditText editText;
+    EditText extraInfEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,17 +25,20 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create);
         /** Это делает кнопку назад, слева от лейбла активности*/
         getSupportActionBar().setHomeButtonEnabled(true);
-        //Связываем EditText.
+        //Связываем EditText - ы.
         editText = findViewById(R.id.taskText);
+        extraInfEditText = findViewById(R.id.extraEditText);
     }
 
-    public void addNewTask(View view) {
+    public  void addNewTask(View view) {
         //Получаем пользовательский текст из нашего EditText.
-        String userText = editText.getText().toString();
+        String userText = editText.getText().toString().trim();
+        String extraInf = extraInfEditText.getText().toString().trim();
         //Проверка на пустой ввод.
         if (!userText.equals("")) {
             //Создаем новое задание с текстом пользователя.
             Task task = new Task(userText, false);
+            if(!extraInf.equals("")) task.setExtraText(extraInf);
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём в интент наш объект Task.

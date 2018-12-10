@@ -2,6 +2,7 @@ package com.prog.belousov.todolist;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.opengl.Visibility;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -42,10 +43,15 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         //Связываем элементы из разметки с кодом.
         TextView usertextTextView = view.findViewById(R.id.taskTextView);
         CheckBox isDoneCheckBox = view.findViewById(R.id.checkBoxIsDone);
+        TextView userExtraTextView = view.findViewById(R.id.extraTextView);
         //Берем конкретное задание из массива.
         Task task = tasks.get(position);
         //Отображаем пользовательский текст на TextView.
         usertextTextView.setText(task.getTaskText());
+        String extra = task.getExtraText();
+        //Если есть дополнительный текст - выводим его, если нет - прячем TextView для доп. текста.
+        if(extra != null) userExtraTextView.setText(extra);
+        else userExtraTextView.setVisibility(View.GONE);
         //Проверяем, сделано ли задание.
         if(!task.isDone()){
             //Задание не выполнено - не делаем с текстом никаких изменений, и CheckBox не отмечаем.
@@ -54,6 +60,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             //Задание выполнено - ...
             //Делаем текст в TextView перечёркнутым.
             usertextTextView.setPaintFlags(usertextTextView.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG );
+            userExtraTextView.setPaintFlags(userExtraTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             //Отмечаем CheckBox.
             isDoneCheckBox.setChecked(!isDoneCheckBox.isChecked());
             return view;

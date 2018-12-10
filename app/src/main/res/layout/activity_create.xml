@@ -14,7 +14,7 @@
         android:layout_marginTop="38dp"
         android:ems="10"
         android:hint="Enter your task"
-        android:inputType="textCapSentences"
+        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete"
         tools:layout_editor_absoluteX="85dp"
         tools:layout_editor_absoluteY="16dp" />
 
@@ -28,4 +28,39 @@
         android:onClick="addNewTask"
         tools:layout_editor_absoluteX="148dp"
         tools:layout_editor_absoluteY="231dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/taskText"
+        android:layout_alignStart="@+id/taskText"
+        android:layout_marginBottom="-38dp"
+        android:text="Task text"
+        android:textColor="@color/colorAccent"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/extraEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/taskText"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="122dp"
+        android:ems="10"
+        android:hint="Anything else?"
+        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/extraEditText"
+        android:layout_alignStart="@+id/taskText"
+        android:layout_marginBottom="-122dp"
+        android:text="Additional informaion"
+        android:textColor="@color/colorAccent"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 </RelativeLayout>

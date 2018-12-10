@@ -17,9 +17,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TasksActivity extends AppCompatActivity {
 
@@ -62,21 +64,21 @@ public class TasksActivity extends AppCompatActivity {
         AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-              //Получаем задание, на который нажали.
-              Task task = taskList.get(position);
-              if(!task.isDone()) {
-                  //Если он не отмечен сделанным, отмечаем его.
-                  task.setDone(true);
-                  taskAdapter.notifyDataSetChanged();
-                  //Записывем изменение в БД.
-                  dataBaseHelper.updateTaskToDone(task);
-              } else {
-                  //Если же отмечен сделанным, то убераем отметку.
-                  task.setDone(false);
-                  taskAdapter.notifyDataSetChanged();
-                  //Записывам изменение в БД.
-                  dataBaseHelper.updateTaskToUndone(task);
-              }
+                //Получаем задание, на который нажали.
+                Task task = taskList.get(position);
+                if (!task.isDone()) {
+                    //Если он не отмечен сделанным, отмечаем его.
+                    task.setDone(true);
+                    taskAdapter.notifyDataSetChanged();
+                    //Записывем изменение в БД.
+                    dataBaseHelper.updateTaskToDone(task);
+                } else {
+                    //Если же отмечен сделанным, то убераем отметку.
+                    task.setDone(false);
+                    taskAdapter.notifyDataSetChanged();
+                    //Записывам изменение в БД.
+                    dataBaseHelper.updateTaskToUndone(task);
+                }
             }
         };
         //Ставим слушателя на ListView.
@@ -110,6 +112,38 @@ public class TasksActivity extends AppCompatActivity {
                 dataBaseHelper.deleteAllTasks();
                 //Удаляем всё записи из адаптера.
                 taskAdapter.clear();
+                return true;
+            case R.id.deleteDoneTaskas:
+                //Через интерфейс удаляем все отмеченные задания из БД.
+                dataBaseHelper.deleteAllDoneTasks();
+                //Проверка на нулевой размер массива.
+                if (taskList.size() != 0) {
+                    //Получаем интератор.
+                    Iterator iterator = taskList.iterator();
+                    do{
+                        //Если задание помеченно как сделанное - итератор это удаляет.
+                         Task task = (Task) iterator.next();
+                         if(task.isDone()) iterator.remove();
+
+                    } while (iterator.hasNext());
+                    //Оповещаем адаптер про изменение.
+                    taskAdapter.notifyDataSetChanged();
+                }
+                else {
+                    showToastMessage("Nothing to delete!");
+                }
+                return true;
+            case R.id.fakeTasks:
+                for(int i = 0; i<30; i++) {
+                    //Получаем объект нового задания Task из Intent data.
+                    Task task = new Task("Какое-то задание обычного размера " + i, false);
+                    //Через интерфейс помошника добавляем в БД новую запись.
+                    dataBaseHelper.addTask(task);
+                    //Добавляем новое задание в массив.
+                    taskList.add(task);
+                    //Оповещаем адаптер, что в массив данных поменялся.
+                    taskAdapter.notifyDataSetChanged();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -186,4 +220,10 @@ public class TasksActivity extends AppCompatActivity {
             }
         }
     }
+
+    //Метод, упрощающий вывод тоста.
+    void showToastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
 }

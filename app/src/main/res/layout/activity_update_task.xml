@@ -6,6 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".UpdateTaskActivity">
 
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editExtra"
+        android:layout_alignStart="@+id/editTask"
+        android:layout_marginBottom="-122dp"
+        android:text="Additional informaion"
+        android:textColor="@color/colorAccent"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editTask"
+        android:layout_alignStart="@+id/editTask"
+        android:layout_marginBottom="-38dp"
+        android:text="Task text"
+        android:textColor="@color/colorAccent"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
     <EditText
         android:id="@+id/editTask"
         android:layout_width="wrap_content"
@@ -14,7 +38,20 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="38dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="85dp" />
+
+    <EditText
+        android:id="@+id/editExtra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="122dp"
+        android:ems="10"
+        android:hint="Anything else?"
+        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="85dp" />
 

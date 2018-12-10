@@ -3,18 +3,28 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_create_task"
+        android:icon="@drawable/baseline_add_24"
+        android:orderInCategory="1"
+        android:title="Create"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/deleteDoneTaskas"
+        android:icon="@drawable/baseline_delete_24"
+        android:orderInCategory="1"
+        android:title="Delete"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/settingsItem"
         android:title="Settings"
         android:orderInCategory="100"
         />
     <item
-        android:id="@+id/action_create_task"
-        android:icon="@drawable/baseline_add_24"
-        android:orderInCategory="1"
-        android:title="Create task"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/deleteAllItem"
         android:orderInCategory="101"
         android:title="Delete all" />
+    <item
+        android:id="@+id/fakeTasks"
+        android:orderInCategory="102"
+        android:title="Add fake tasks" />
 </menu>

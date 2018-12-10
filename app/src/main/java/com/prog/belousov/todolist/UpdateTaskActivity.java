@@ -11,6 +11,7 @@ import android.widget.Toast;
 public class UpdateTaskActivity extends AppCompatActivity {
 
     EditText editTask;
+    EditText editExtra;
     Task oldTask;
 
     @Override
@@ -20,20 +21,28 @@ public class UpdateTaskActivity extends AppCompatActivity {
         //Это делает кнопку назад, слева от лейбла активности.
         getSupportActionBar().setHomeButtonEnabled(true);
         editTask = findViewById(R.id.editTask);
+        editExtra = findViewById(R.id.editExtra);
         //Получаем старое задание, которое нужно отредактировать.
         oldTask = (Task) getIntent().getSerializableExtra("usertask");
         //Ставим в EditText текст старого задания.
         editTask.setText(oldTask.getTaskText());
+        String extra = oldTask.getExtraText();
+        if(extra !=null) editExtra.setText(extra);
+        //Перемещает курсор в конец для удобства.
+        editTask.setSelection(editTask.getText().length());
+
     }
 
     //Метод, который вызывается при нажатии кнопки Submit.
     public void submitChanges(View view){
         //Получаем пользовательский текст из нашего EditText.
-        String userText = editTask.getText().toString();
+        String userText = editTask.getText().toString().trim();
+        String userExtra = editExtra.getText().toString().trim();
         //Проверка на пустой ввод.
         if (!userText.equals("")) {
             //Создаем обновлённое задание с текстом пользователя.
             Task newTask = new Task(userText, oldTask.isDone());
+            if(!userExtra.equals("")) newTask.setExtraText(userExtra);
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём старый обьект Task.

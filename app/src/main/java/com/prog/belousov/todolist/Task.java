@@ -6,8 +6,15 @@ import java.io.Serializable;
 
 public class Task implements Serializable {
 
+    //Основной текст, заголовок.
     private String taskText;
+    //Флаг, отмечающий выполненное задание.
     private boolean isDone;
+
+
+
+    //Дополниетльный текст заданя.
+    private String extraText;
 
     public boolean isDone() {
         return isDone;
@@ -17,9 +24,17 @@ public class Task implements Serializable {
         isDone = done;
     }
 
+    public Task(){}
+
     public Task(String taskText, boolean isDone) {
         this.taskText = taskText;
         this.isDone = isDone;
+    }
+
+    public Task(String taskText, boolean isDone, String extraText){
+        this.taskText = taskText;
+        this.isDone = isDone;
+        this.extraText = extraText;
     }
 
     public String getTaskText() {
@@ -29,6 +44,14 @@ public class Task implements Serializable {
     public void setTaskText(String taskText) {
         if (!taskText.equals(""))
             this.taskText = taskText;
+    }
+
+    public String getExtraText() {
+        return extraText;
+    }
+
+    public void setExtraText(String extraText) {
+        this.extraText = extraText;
     }
 
     @Override
