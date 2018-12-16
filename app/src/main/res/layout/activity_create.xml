@@ -22,10 +22,11 @@
         android:id="@+id/createButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="create"
+        android:layout_marginBottom="125dp"
         android:onClick="addNewTask"
+        android:text="create"
         tools:layout_editor_absoluteX="148dp"
         tools:layout_editor_absoluteY="231dp" />
 
@@ -50,7 +51,7 @@
         android:layout_marginTop="122dp"
         android:ems="10"
         android:hint="Anything else?"
-        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete" />
+        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine" />
 
     <TextView
         android:id="@+id/textView4"
@@ -63,4 +64,15 @@
         android:textColor="@color/colorAccent"
         android:textSize="15sp"
         android:textStyle="bold" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="215dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/taskText"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="189dp"
+        android:text="Alarm" />
+
+
 </RelativeLayout>

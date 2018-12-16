@@ -2,6 +2,8 @@ package com.prog.belousov.todolist;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,14 +12,20 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
+
+import com.prog.belousov.todolist.utility.NotificationUtils;
 
 
 public class CreateNewTaskActivity extends AppCompatActivity {
 
     EditText editText;
     EditText extraInfEditText;
+    Switch needAlarm;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,9 +33,25 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create);
         /** Это делает кнопку назад, слева от лейбла активности*/
         getSupportActionBar().setHomeButtonEnabled(true);
-        //Связываем EditText - ы.
+        //Связываем EditText - ы и Switch.
         editText = findViewById(R.id.taskText);
         extraInfEditText = findViewById(R.id.extraEditText);
+        needAlarm = findViewById(R.id.switch1);
+        //Ставим слушателя изменения позиции рычажка в Switch-e.
+        needAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //Если Switch включили, мы должны включить оповещения(напоминания).
+                if(isChecked){
+                    NotificationUtils.notifyUserAboutTask(CreateNewTaskActivity.this);
+                    Toast.makeText(CreateNewTaskActivity.this, "Свитч вкдлючен!", Toast.LENGTH_SHORT).show();
+                }
+                //Switch выключили, отключить напоминания.
+                else {
+                    Toast.makeText(CreateNewTaskActivity.this, "Теперь свитч выключен!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public  void addNewTask(View view) {

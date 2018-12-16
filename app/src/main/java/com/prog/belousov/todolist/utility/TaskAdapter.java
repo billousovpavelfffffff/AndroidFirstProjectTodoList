@@ -1,4 +1,4 @@
-package com.prog.belousov.todolist;
+package com.prog.belousov.todolist.utility;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.prog.belousov.todolist.R;
+import com.prog.belousov.todolist.Task;
 
 import org.w3c.dom.Text;
 
