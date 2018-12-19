@@ -72,7 +72,9 @@
         android:layout_alignStart="@+id/taskText"
         android:layout_alignParentTop="true"
         android:layout_marginTop="189dp"
-        android:text="Alarm" />
-
+        android:text="Remind me"
+        android:textColor="@color/colorAccent"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

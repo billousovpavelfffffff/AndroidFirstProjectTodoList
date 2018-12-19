@@ -28,6 +28,9 @@
             >
 
         </activity>
+
+        <receiver android:name=".utility.NotificationReceiver">
+        </receiver>
     </application>
 
 </manifest>

@@ -17,10 +17,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //Константа, которая содержит имя таблицы в базе данных.
     private final static String TABLE_NAME = "TASKS";
     // Имя базы данных
+    private static final String DB_NAME = "tasksdb";
+    private static final String COLUMN_ID = "_id";
     private static final String COLUMN_USERTEXT = "USERTEXT";
     private static final String COLUMN_ISDONE = "ISDONE";
     private static final String COLUMN_EXTRA = "EXTRA";
-    private static final String DB_NAME = "tasksdb";
+
     // Версия базы данных
     private static final int DB_VERSION = 1;
 
@@ -82,6 +84,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         database.close();
         return taskList;
     }
+
+
     //Метод, удаляющий все задания из базы данных.
     public void  deleteAllTasks(){
         //Получение ссылки на базу данных.
@@ -123,4 +127,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         database.delete(TABLE_NAME, COLUMN_ISDONE + " = ?", new String[]{"1"});
     }
 
+    public int  getTaskId(Task task){
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_ID},
+                COLUMN_USERTEXT + " = ?", new String[]{task.getTaskText()}, null, null, null);
+        cursor.moveToFirst();
+        int id = cursor.getInt(0);
+        cursor.close();
+        return id;
+    }
+
+    public Task getTaskById(int id){
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_USERTEXT, COLUMN_ISDONE, COLUMN_EXTRA},
+                COLUMN_ID + " = ?",new String[]{Integer.toString(id)} , null, null, null);
+        cursor.moveToFirst();
+        Task task = new Task();
+        String userText = cursor.getString(0);
+        task.setTaskText(userText);
+        boolean done = cursor.getInt(1) == 1;
+        task.setDone(done);
+        String extra = cursor.getString(2);
+        if(extra!=null) task.setExtraText(extra);
+        return task;
+    }
 }

@@ -190,8 +190,6 @@ public class TasksActivity extends AppCompatActivity {
             if (requestCode == REQUEST_CODE_CREATE) {
                 //Получаем объект нового задания Task из Intent data.
                 Task task = (Task) data.getSerializableExtra("usertask");
-                //Через интерфейс помошника добавляем в БД новую запись.
-                dataBaseHelper.addTask(task);
                 //Добавляем новое задание в массив.
                 taskList.add(task);
                 //Оповещаем адаптер, что в массив данных поменялся.

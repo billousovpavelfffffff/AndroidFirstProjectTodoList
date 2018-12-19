@@ -10,6 +10,8 @@ public class Task implements Serializable {
     private String taskText;
     //Флаг, отмечающий выполненное задание.
     private boolean isDone;
+    //Айди задания (У каждого уникальный).
+    private int id;
 
 
 

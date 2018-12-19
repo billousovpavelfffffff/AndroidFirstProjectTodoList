@@ -1,5 +1,6 @@
 package com.prog.belousov.todolist.utility;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,7 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.widget.Switch;
 
 import com.prog.belousov.todolist.R;
+import com.prog.belousov.todolist.Task;
 import com.prog.belousov.todolist.TasksActivity;
+
+import java.util.Calendar;
 
 public class NotificationUtils {
 
@@ -21,8 +25,32 @@ public class NotificationUtils {
     private static final String TODOLIST_NOTIFICATAION_CHANNEL_ID = "todolist_notification_channel";
 
 
+
+    public static void setNotificationScheduler(Context context,  int taskId, int hours, int minutes){
+        //Инициализируем AlarmManager, именно он отправляет Intent в нужное время.
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        //Intent, который нужно отправить в заданное время.
+        Intent intent = new Intent(context, NotificationReceiver.class);
+        //Кладем дополнительно ID задания, о котором нужно напомнить.
+        intent.putExtra("id", taskId);
+        //Какое-то действие, без которого будет присылаться только одно уведомление, ахаха xDD.
+        intent.setAction(Long.toString(System.currentTimeMillis()));
+        //Оборачиваем Intent в PendingIntent, чтобы его могла кинуть сама система.
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 999999, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Устанавливаем время, в которое AlarmManager должен прислать Intent.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, minutes);
+        //Устанавливаем AlarmManager.
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+
+    }
+
+
+
     //Метод, ответственный за создание уведомления, и вывода его.
-    public static void notifyUserAboutTask(Context context) {
+    public static void notifyUserAboutTask(Context context, Task task) {
         //Инициализируем NotificationManager, он управляет уведомлениями.
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //Теперь специально для Андроид версии 8 и выше...
@@ -36,8 +64,8 @@ public class NotificationUtils {
                 new NotificationCompat.Builder(context, TODOLIST_NOTIFICATAION_CHANNEL_ID)
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setSmallIcon(R.drawable.ic_stat_check)
-                        .setContentTitle("There is my notification!")
-                        .setContentText("And here your task that you should do.")
+                        .setContentTitle(task.getTaskText())
+                        .setContentText(task.getExtraText())
                         .setDefaults(Notification.DEFAULT_VIBRATE)
                         .setDefaults(Notification.DEFAULT_SOUND)
                         .setContentIntent(contentIntent(context))
