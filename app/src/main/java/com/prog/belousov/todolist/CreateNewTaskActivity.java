@@ -108,11 +108,13 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         //Получаем пользовательский текст из нашего EditText.
         String userText = editText.getText().toString().trim();
         String extraInf = extraInfEditText.getText().toString().trim();
+        String userTime = timeEdText.getText().toString();
         //Проверка на пустой ввод.
         if (!userText.equals("") && !extraInf.equals("")) {
             //Создаем новое задание с текстом пользователя.
             Task task = new Task(userText, false);
             if (!extraInf.equals("")) task.setExtraText(extraInf);
+            if(!userTime.equals("")) task.setTimeOfAlarm(userTime);
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём в интент наш объект Task.
@@ -143,7 +145,7 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         } else return super.onOptionsItemSelected(item);
     }
     //Метод, который возвращает часы, которые в данный момент на устройстве.
-    public String getUserHours(boolean forString){
+    public static String getUserHours(boolean forString){
         //Создаём обьект Calendar, чтобы взять текущее время на устройстве.
         Calendar calendar = Calendar.getInstance();
         int hours = calendar.get(Calendar.HOUR_OF_DAY);
@@ -156,7 +158,7 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         return strHours;
     }
     //Метод, который возвращает минуты, которые в данный момент на устройстве.
-    public String getUserMinutes(boolean forString){
+    public static String getUserMinutes(boolean forString){
         //Создаём обьект Calendar, чтобы взять текущее время на устройстве.
         Calendar calendar = Calendar.getInstance();
         int minute = calendar.get(Calendar.MINUTE);

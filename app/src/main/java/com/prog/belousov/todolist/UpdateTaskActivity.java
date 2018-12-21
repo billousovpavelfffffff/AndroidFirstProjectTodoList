@@ -6,13 +6,18 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 public class UpdateTaskActivity extends AppCompatActivity {
 
     EditText editTask;
     EditText editExtra;
+    Switch editNeedAlarm;
+    EditText editTime;
+
     Task oldTask;
+    Task newTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,16 +25,30 @@ public class UpdateTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_update_task);
         //Это делает кнопку назад, слева от лейбла активности.
         getSupportActionBar().setHomeButtonEnabled(true);
+        //Связываем все наши EditText-ы.
         editTask = findViewById(R.id.editTask);
         editExtra = findViewById(R.id.editExtra);
+        editTime = findViewById(R.id.timeUpdateEditText);
+        editNeedAlarm = findViewById(R.id.switch2);
         //Получаем старое задание, которое нужно отредактировать.
         oldTask = (Task) getIntent().getSerializableExtra("usertask");
         //Ставим в EditText текст старого задания.
         editTask.setText(oldTask.getTaskText());
         String extra = oldTask.getExtraText();
-        if(extra !=null) editExtra.setText(extra);
+        if(extra !=null){
+            editExtra.setText(extra);
+            //Перемещает курсор в конец для удобства.
+            editExtra.setSelection(editExtra.getText().length());
+        }
+        String time = oldTask.getTimeOfAlarm();
+        if(time !=null) {
+            editTime.setText(time);
+            editNeedAlarm.setChecked(true);
+        }
+        else editTime.setText(CreateNewTaskActivity.getUserHours(true)+ ":"+ CreateNewTaskActivity.getUserMinutes(true));
         //Перемещает курсор в конец для удобства.
         editTask.setSelection(editTask.getText().length());
+
 
     }
 
@@ -41,8 +60,24 @@ public class UpdateTaskActivity extends AppCompatActivity {
         //Проверка на пустой ввод.
         if (!userText.equals("")) {
             //Создаем обновлённое задание с текстом пользователя.
-            Task newTask = new Task(userText, oldTask.isDone());
+            newTask = new Task(userText, oldTask.isDone());
             if(!userExtra.equals("")) newTask.setExtraText(userExtra);
+            //Берём из timeUpdateEditText время, и проверяем.
+            //Если у задания до этого было установлено уведомление.
+            if(!oldTask.getTimeOfAlarm().equals("")){
+                //И если в данном случае пользователь выключил Switch.
+                if(!editNeedAlarm.isChecked()){
+                    //Отменяем уведомление на обновленном задании.
+                    //TODO: Сделать возможность отмены уведомления на коккретном задании.
+                   cancelNotification();
+                //Если же Switch остался включенным, проверяем на сходсиво время, указанное в timeUpdateEditText.
+                } else {
+                    //Если время другое...
+                    if(!oldTask.getTimeOfAlarm().equals(editTime.getText().toString())){
+                        //TODO: Сделать обновление времени уведомления.
+                    }
+                }
+            }
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём старый обьект Task.
@@ -58,6 +93,8 @@ public class UpdateTaskActivity extends AppCompatActivity {
             Toast.makeText(this, "Please write your task.", Toast.LENGTH_SHORT).show();
     }
 
+    private void cancelNotification() {
+    }
 
 
     //Метод, который обрабатывает нажатие на кнопу назад в левом верхнем углу.

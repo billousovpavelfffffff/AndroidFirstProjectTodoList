@@ -12,18 +12,18 @@ public class Task implements Serializable {
     private boolean isDone;
     //Айди задания (У каждого уникальный).
     private int id;
-
-
-
+    //Время, в которое придёт напоминание об этом задании.
+    private String timeOfAlarm;
     //Дополниетльный текст заданя.
     private String extraText;
 
-    public boolean isDone() {
-        return isDone;
-    }
 
-    public void setDone(boolean done) {
-        isDone = done;
+
+    public Task(String taskText, boolean isDone, String timeOfAlarm, String extraText) {
+        this.taskText = taskText;
+        this.isDone = isDone;
+        this.timeOfAlarm = timeOfAlarm;
+        this.extraText = extraText;
     }
 
     public Task(){}
@@ -54,6 +54,22 @@ public class Task implements Serializable {
 
     public void setExtraText(String extraText) {
         this.extraText = extraText;
+    }
+
+    public String getTimeOfAlarm() {
+        return timeOfAlarm;
+    }
+
+    public void setTimeOfAlarm(String timeOfAlarm) {
+        this.timeOfAlarm = timeOfAlarm;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 
     @Override
