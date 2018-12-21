@@ -27,11 +27,14 @@ import java.util.Calendar;
 
 public class CreateNewTaskActivity extends AppCompatActivity {
 
+
+    EditText timeEdText;
     EditText editText;
     EditText extraInfEditText;
     Switch needAlarm;
-    TimePickerDialog.OnTimeSetListener onTimeSetListener;
 
+
+    TimePickerDialog.OnTimeSetListener onTimeSetListener;
     int hourOfNotification;
     int minuteOfNotification;
 
@@ -46,18 +49,33 @@ public class CreateNewTaskActivity extends AppCompatActivity {
         editText = findViewById(R.id.taskText);
         extraInfEditText = findViewById(R.id.extraEditText);
         needAlarm = findViewById(R.id.switch1);
+        timeEdText = findViewById(R.id.timeEditText);
+        //Настраиваем EditText времени.
+        timeEdText.setHint(getUserHours(true)+":" + getUserMinutes(true));
+        timeEdText.setFocusable(false);
+        timeEdText.setClickable(false);
+        timeEdText.setLongClickable(false);
         //Ставим слушателя изменения позиции рычажка в Switch-e.
         needAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //Если Switch включили, мы должны включить оповещения(напоминания).
-                if (isChecked) {
-                    //Создаём обьект Calendar, чтобы взять текущее время на устройстве.
-                    Calendar calendar = Calendar.getInstance();
+               if(isChecked){
+                   timeEdText.setText(getUserHours(true)+":" + getUserMinutes(true));
+               } else
+                   timeEdText.setText("");
+                   timeEdText.setHint(getUserHours(true)+":" + getUserMinutes(true));
+            }
+        });
+
+        //Ставим на него слушателя нажатий.
+        timeEdText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(needAlarm.isChecked()){
                     //Получаем текущий час от календаря.
-                     hourOfNotification = calendar.get(Calendar.HOUR_OF_DAY);
+                    hourOfNotification = Integer.valueOf(getUserHours(false));
                     //Получаем текущие минуты от календаря.
-                     minuteOfNotification = calendar.get(Calendar.MINUTE);
+                    minuteOfNotification = Integer.valueOf(getUserMinutes(false));
                     //Инициализируем слушателя (Что сделать, когда пользователь выберет время).
                     onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
                         @Override
@@ -65,7 +83,10 @@ public class CreateNewTaskActivity extends AppCompatActivity {
                             //Забираем у TimePicker-а время, выбранное пользоватем, и сохраняем в глобальные переменные.
                             hourOfNotification = hourOfDay;
                             minuteOfNotification = minute;
-                            Toast.makeText(CreateNewTaskActivity.this, "Выбранное время: " + hourOfNotification+":" + minuteOfNotification , Toast.LENGTH_SHORT).show();
+                            //Ставим обновлённые данные в EditText.
+                            String strHours = String.format("%02d", hourOfNotification);
+                            String strMinutes = String.format("%02d", minuteOfNotification);
+                            timeEdText.setText(strHours + ":"+strMinutes);
                         }
                     };
                     //Создаём диалоговое окно выбора времени, передаём контекст; что нужно сделать,
@@ -77,13 +98,10 @@ public class CreateNewTaskActivity extends AppCompatActivity {
                             true);
                     //Выводим диалоговое окно методом show().
                     timePickerDialog.show();
-            }
-                //Switch выключили, отключить напоминания.
-                else {
-                    Toast.makeText(CreateNewTaskActivity.this, "Теперь свитч выключен!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
     }
 
     public void addNewTask(View view) {
@@ -124,4 +142,31 @@ public class CreateNewTaskActivity extends AppCompatActivity {
             return true;
         } else return super.onOptionsItemSelected(item);
     }
+    //Метод, который возвращает часы, которые в данный момент на устройстве.
+    public String getUserHours(boolean forString){
+        //Создаём обьект Calendar, чтобы взять текущее время на устройстве.
+        Calendar calendar = Calendar.getInstance();
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        String strHours = String.valueOf(hours);
+        if(forString){
+            if(hours>=0 && hours<10){
+                strHours = "0"+strHours;
+            }
+        }
+        return strHours;
+    }
+    //Метод, который возвращает минуты, которые в данный момент на устройстве.
+    public String getUserMinutes(boolean forString){
+        //Создаём обьект Calendar, чтобы взять текущее время на устройстве.
+        Calendar calendar = Calendar.getInstance();
+        int minute = calendar.get(Calendar.MINUTE);
+        String strMinute = String.valueOf(minute);
+        if(forString) {
+           if(minute>=0 && minute<10){
+                strMinute = "0"+strMinute;
+           }
+        }
+        return strMinute;
+         }
 }
+
