@@ -91,6 +91,7 @@ public class NotificationUtils {
                         .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                         .setSmallIcon(R.drawable.ic_stat_check)
                         .setContentTitle(task.getTaskText())
+                        //TODO: Сделать кнопку в уведомлении!
                         .setContentText(task.getExtraText())
                         .setDefaults(Notification.DEFAULT_VIBRATE)
                         .setDefaults(Notification.DEFAULT_SOUND)
@@ -113,5 +114,6 @@ public class NotificationUtils {
         //Оборачиваем наш Intent в PendingIntent(Чтобы сама система могла его запускать, обычный Intent она запустить не сможет).
         return PendingIntent.getActivity(context, PENDING_INTENT_ID, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
+
 
 }
