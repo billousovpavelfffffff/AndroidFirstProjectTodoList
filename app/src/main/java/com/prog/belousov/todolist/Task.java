@@ -10,6 +10,7 @@ public class Task implements Serializable {
     private String taskText;
     //Флаг, отмечающий выполненное задание.
     private boolean isDone;
+
     //Айди задания (У каждого уникальный).
     private int id;
     //Время, в которое придёт напоминание об этом задании.
@@ -70,6 +71,14 @@ public class Task implements Serializable {
 
     public void setDone(boolean done) {
         isDone = done;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

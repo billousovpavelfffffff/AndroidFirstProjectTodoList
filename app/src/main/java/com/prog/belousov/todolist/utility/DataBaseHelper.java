@@ -67,19 +67,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         //Получаем ссылку на базу данных.
         SQLiteDatabase database = this.getWritableDatabase();
         //Курсор, для доступа к запросу из базы данных. Можно назвать итератором.
-        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_USERTEXT, COLUMN_ISDONE, COLUMN_EXTRA, COLUMN_TIME_OF_ALARM},
+        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_ID, COLUMN_USERTEXT, COLUMN_ISDONE, COLUMN_EXTRA, COLUMN_TIME_OF_ALARM},
                 null, null, null, null, null);
         if (cursor.moveToFirst()) {
             //Пока есть строки, он оттуда берет инфу.
             do {
                 Task task = new Task();
-                String userText = cursor.getString(0);
+                task.setId(cursor.getInt(0));
+                String userText = cursor.getString(1);
                 task.setTaskText(userText);
-                boolean done = cursor.getInt(1) == 1;
+                boolean done = cursor.getInt(2) == 1;
                 task.setDone(done);
-                String extra = cursor.getString(2);
+                String extra = cursor.getString(3);
                 if(extra!=null) task.setExtraText(extra);
-                String time = cursor.getString(3);
+                String time = cursor.getString(4);
                 if (time !=null) task.setTimeOfAlarm(time);
                 taskList.add(task);
             } while (cursor.moveToNext());
@@ -148,14 +149,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_USERTEXT, COLUMN_ISDONE, COLUMN_EXTRA},
                 COLUMN_ID + " = ?",new String[]{Integer.toString(id)} , null, null, null);
-        cursor.moveToFirst();
         Task task = new Task();
-        String userText = cursor.getString(0);
-        task.setTaskText(userText);
-        boolean done = cursor.getInt(1) == 1;
-        task.setDone(done);
-        String extra = cursor.getString(2);
-        if(extra!=null) task.setExtraText(extra);
-        return task;
+        if(cursor.moveToFirst()) {
+            String userText = cursor.getString(0);
+            task.setTaskText(userText);
+            boolean done = cursor.getInt(1) == 1;
+            task.setDone(done);
+            String extra = cursor.getString(2);
+            if (extra != null) task.setExtraText(extra);
+            return task;
+        } else return null;
+
     }
 }

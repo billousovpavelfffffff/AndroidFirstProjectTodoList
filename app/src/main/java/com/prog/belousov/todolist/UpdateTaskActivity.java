@@ -1,13 +1,22 @@
 package com.prog.belousov.todolist;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.prog.belousov.todolist.utility.DataBaseHelper;
+import com.prog.belousov.todolist.utility.NotificationUtils;
+
+import static com.prog.belousov.todolist.CreateNewTaskActivity.getUserHours;
+import static com.prog.belousov.todolist.CreateNewTaskActivity.getUserMinutes;
 
 public class UpdateTaskActivity extends AppCompatActivity {
 
@@ -18,6 +27,11 @@ public class UpdateTaskActivity extends AppCompatActivity {
 
     Task oldTask;
     Task newTask;
+
+    int hourOfNotification;
+    int minuteOfNotification;
+
+    TimePickerDialog.OnTimeSetListener onTimeSetListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +44,41 @@ public class UpdateTaskActivity extends AppCompatActivity {
         editExtra = findViewById(R.id.editExtra);
         editTime = findViewById(R.id.timeUpdateEditText);
         editNeedAlarm = findViewById(R.id.switch2);
+
+        //Ставим на него слушателя нажатий.
+        editTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editNeedAlarm.isChecked()){
+                    //Получаем текущий час от календаря.
+                    hourOfNotification = Integer.valueOf(getUserHours(false));
+                    //Получаем текущие минуты от календаря.
+                    minuteOfNotification = Integer.valueOf(getUserMinutes(false));
+                    //Инициализируем слушателя (Что сделать, когда пользователь выберет время).
+                    onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                            //Забираем у TimePicker-а время, выбранное пользоватем, и сохраняем в глобальные переменные.
+                            hourOfNotification = hourOfDay;
+                            minuteOfNotification = minute;
+                            //Ставим обновлённые данные в EditText.
+                            String strHours = String.format("%02d", hourOfNotification);
+                            String strMinutes = String.format("%02d", minuteOfNotification);
+                            editTime.setText(strHours + ":"+strMinutes);
+                        }
+                    };
+                    //Создаём диалоговое окно выбора времени, передаём контекст; что нужно сделать,
+                    //после того, как пользователь выберет время; текущее время на усройстве и формат(24 или 12).
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(UpdateTaskActivity.this,
+                            onTimeSetListener,
+                            hourOfNotification,
+                            minuteOfNotification,
+                            true);
+                    //Выводим диалоговое окно методом show().
+                    timePickerDialog.show();
+                }
+            }
+        });
         //Получаем старое задание, которое нужно отредактировать.
         oldTask = (Task) getIntent().getSerializableExtra("usertask");
         //Ставим в EditText текст старого задания.
@@ -45,9 +94,21 @@ public class UpdateTaskActivity extends AppCompatActivity {
             editTime.setText(time);
             editNeedAlarm.setChecked(true);
         }
-        else editTime.setText(CreateNewTaskActivity.getUserHours(true)+ ":"+ CreateNewTaskActivity.getUserMinutes(true));
+        else editTime.setHint(getUserHours(true)+ ":"+ getUserMinutes(true));
         //Перемещает курсор в конец для удобства.
+
         editTask.setSelection(editTask.getText().length());
+        //Ставим слушателя изменения позиции рычажка в Switch-e.
+        editNeedAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    editTime.setText(getUserHours(true)+":" + getUserMinutes(true));
+                } else
+                    editTime.setText("");
+                editTime.setHint(getUserHours(true)+":" + getUserMinutes(true));
+            }
+        });
 
 
     }
@@ -64,20 +125,6 @@ public class UpdateTaskActivity extends AppCompatActivity {
             if(!userExtra.equals("")) newTask.setExtraText(userExtra);
             //Берём из timeUpdateEditText время, и проверяем.
             //Если у задания до этого было установлено уведомление.
-            if(!oldTask.getTimeOfAlarm().equals("")){
-                //И если в данном случае пользователь выключил Switch.
-                if(!editNeedAlarm.isChecked()){
-                    //Отменяем уведомление на обновленном задании.
-                    //TODO: Сделать возможность отмены уведомления на коккретном задании.
-                   cancelNotification();
-                //Если же Switch остался включенным, проверяем на сходсиво время, указанное в timeUpdateEditText.
-                } else {
-                    //Если время другое...
-                    if(!oldTask.getTimeOfAlarm().equals(editTime.getText().toString())){
-                        //TODO: Сделать обновление времени уведомления.
-                    }
-                }
-            }
             //Создаём новый интент.
             Intent intent = new Intent();
             //Кладём старый обьект Task.
@@ -86,6 +133,41 @@ public class UpdateTaskActivity extends AppCompatActivity {
             intent.putExtra("usernewtask", newTask);
             //Устанавливаем результат выполнения нашей активности.
             setResult(RESULT_OK, intent);
+            if(oldTask.getTimeOfAlarm() !=null){
+                //И если в данном случае пользователь выключил Switch.
+                if(!editNeedAlarm.isChecked()){
+                    //Отменяем уведомление на обновленном задании.
+                    NotificationUtils.cancelAlarm(this, oldTask.getId());
+                    //Очищаем поле с временем, ставя в hint время с устройства.
+                    editTime.setHint(getUserHours(true)+ ":"+ getUserMinutes(true));
+                    //Если же Switch остался включенным, проверяем на сходсиво время, указанное в timeUpdateEditText.
+                } else {
+                    //Если время другое...
+                    if(!oldTask.getTimeOfAlarm().equals(editTime.getText().toString())){
+                        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+                        dataBaseHelper.updateTask(oldTask, newTask);
+                        int id = dataBaseHelper.getTaskId(newTask);
+                        //Ставим уведомление на новое время.
+                        NotificationUtils.updateNotificationShedule(this, id, hourOfNotification, minuteOfNotification);
+                        //Ставим в поле задания время.
+                        newTask.setTimeOfAlarm(editTime.getText().toString());
+                    }
+                }
+                //В случае, если на изменяемом задании не была установлено уведомление..
+            } else {
+                //Если рычажок во включенном положении..
+                if(editNeedAlarm.isChecked()){
+                    DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+                    dataBaseHelper.updateTask(oldTask, newTask);
+                    int id = dataBaseHelper.getTaskId(newTask);
+                    //Ставим уведомление черезитерфейс.
+                    NotificationUtils.setNotificationScheduler(this, id, hourOfNotification, minuteOfNotification);
+                    //Ставим в поле задания время.
+                    newTask.setTimeOfAlarm(editTime.getText().toString());
+                }
+            }
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+            dataBaseHelper.updateTask(oldTask, newTask);
             //Интересный метод, просто завершает данную активность, и приложение возвращается на главную активность!
             finish();
         } else

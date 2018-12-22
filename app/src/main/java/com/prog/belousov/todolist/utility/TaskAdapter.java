@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.prog.belousov.todolist.R;
@@ -47,6 +48,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         TextView usertextTextView = view.findViewById(R.id.taskTextView);
         CheckBox isDoneCheckBox = view.findViewById(R.id.checkBoxIsDone);
         TextView userExtraTextView = view.findViewById(R.id.extraTextView);
+        ImageView alarmImage = view.findViewById(R.id.alarmImage);
+        TextView timeTextVieew = view.findViewById(R.id.timeTextView);
         //Берем конкретное задание из массива.
         Task task = tasks.get(position);
         //Отображаем пользовательский текст на TextView.
@@ -55,6 +58,13 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         //Если есть дополнительный текст - выводим его, если нет - прячем TextView для доп. текста.
         if(extra != null) userExtraTextView.setText(extra);
         else userExtraTextView.setVisibility(View.GONE);
+        //Если есть время для уведомления - его нужно отобразить, и подстветить будильник.
+        String time = task.getTimeOfAlarm();
+        if(time != null) {
+            alarmImage.setColorFilter(getContext().getResources().getColor(R.color.colorAccent));
+            timeTextVieew.setText(time);
+            timeTextVieew.setVisibility(View.VISIBLE);
+        }
         //Проверяем, сделано ли задание.
         if(!task.isDone()){
             //Задание не выполнено - не делаем с текстом никаких изменений, и CheckBox не отмечаем.

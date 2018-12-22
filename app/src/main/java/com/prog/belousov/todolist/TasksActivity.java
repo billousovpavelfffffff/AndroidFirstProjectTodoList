@@ -202,8 +202,6 @@ public class TasksActivity extends AppCompatActivity {
                 Task oldTask = (Task) data.getSerializableExtra("useroldtask");
                 //Измененный обьект Task, который нужно занести в базу данных вместо старого.
                 Task newTask = (Task) data.getSerializableExtra("usernewtask");
-                //Через интерфейс меняем задание в базе данных.
-                dataBaseHelper.updateTask(oldTask, newTask);
                 //Находим нужный нам индекс.
                 int index = taskList.indexOf(oldTask);
                 //Удаляем обьект с этого индекса.

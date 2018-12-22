@@ -16,18 +16,16 @@
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="0dp"
-        android:background="@android:color/transparent"
         android:layout_marginTop="0dp"
+        android:background="@android:color/transparent"
         android:clickable="false"
         android:focusable="false" />
 
     <TextView
         android:id="@+id/taskTextView"
-        android:layout_width="341dp"
+        android:layout_width="290dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/checkBoxIsDone"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="-1dp"
         android:layout_toEndOf="@+id/checkBoxIsDone"
         android:gravity="center_vertical"
         android:text="Некоторый текст заметки"
@@ -37,11 +35,31 @@
 
     <TextView
         android:id="@+id/extraTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="290dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/taskTextView"
         android:layout_toEndOf="@+id/checkBoxIsDone"
         android:text="Дополнительный текст"
-        android:textSize="17sp" />
+        android:textSize="17sp"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/alarmImage"
+        android:layout_width="38dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/checkBoxIsDone"
+        android:layout_alignParentEnd="true"
+        app:srcCompat="@drawable/baseline_alarm_24" />
+
+    <TextView
+        android:id="@+id/timeTextView"
+        android:layout_width="39dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/alarmImage"
+        android:layout_alignStart="@+id/alarmImage"
+        android:text="16:40"
+        android:textColor="@color/colorAccent"
+        android:visibility="invisible"
+        tools:text="16:40" />
 
 </RelativeLayout>

@@ -12,6 +12,8 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra("id", 1);
         DataBaseHelper dataBaseHelper = new DataBaseHelper(context);
-        NotificationUtils.notifyUserAboutTask(context, dataBaseHelper.getTaskById(id));
+        Task task = dataBaseHelper.getTaskById(id);
+        if(task != null)
+        NotificationUtils.notifyUserAboutTask(context, task);
     }
 }

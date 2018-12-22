@@ -23,20 +23,19 @@ public class NotificationUtils {
     //Константа, с Id для PendingIntent, используется для идентифицирования.
     private static final int PENDING_INTENT_ID = 39595;
     private static final String TODOLIST_NOTIFICATAION_CHANNEL_ID = "todolist_notification_channel";
-
+    static AlarmManager alarmManager;
 
 
     public static void setNotificationScheduler(Context context,  int taskId, int hours, int minutes){
         //Инициализируем AlarmManager, именно он отправляет Intent в нужное время.
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         //Intent, который нужно отправить в заданное время.
         Intent intent = new Intent(context, NotificationReceiver.class);
         //Кладем дополнительно ID задания, о котором нужно напомнить.
         intent.putExtra("id", taskId);
-        //Какое-то действие, без которого будет присылаться только одно уведомление, ахаха xDD.
-        intent.setAction(Long.toString(System.currentTimeMillis()));
         //Оборачиваем Intent в PendingIntent, чтобы его могла кинуть сама система.
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 999999, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Идентифицируем PendingIntent тем же айди, что и задание, для которого он создаётся.
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, taskId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //Устанавливаем время, в которое AlarmManager должен прислать Intent.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -47,7 +46,32 @@ public class NotificationUtils {
 
     }
 
+    public static void cancelAlarm(Context context, int taskID){
+        //Инициализируем AlarmManager, именно он отправляет Intent в нужное время.
+        alarmManager =  (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(PendingIntent.getBroadcast(context, taskID, new Intent(context, NotificationReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
 
+    }
+
+    public static void updateNotificationShedule(Context context, int taskId, int hours, int minutes){
+        //Инициализируем AlarmManager, именно он отправляет Intent в нужное время.
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        //Intent, который нужно отправить в заданное время.
+        Intent intent = new Intent(context, NotificationReceiver.class);
+        //Кладем дополнительно ID задания, о котором нужно напомнить.
+        intent.putExtra("id", taskId);
+        //Оборачиваем Intent в PendingIntent, чтобы его могла кинуть сама система.
+        //Идентифицируем PendingIntent тем же айди, что и задание, для которого он создаётся.
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, taskId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Устанавливаем время, в которое AlarmManager должен прислать Intent.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, minutes);
+        //Устанавливаем AlarmManager.
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+
+    }
 
 
 
